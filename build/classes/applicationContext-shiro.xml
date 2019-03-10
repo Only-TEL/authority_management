@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd 
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+        
+	<!-- 开启注解配置权限 -->
+	<!-- 开启AOP代理 -->
+	<aop:config proxy-target-class="true"></aop:config>
+	<!-- 开启shiro注解 -->
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager"></property>
+	</bean>
+	
+	<!-- 配置shiro的过滤器 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager"></property>
+		<!--如果没有指定要跳转的登陆地址，那就默认登陆地址为login.jsp -->
+		<property name="loginUrl" value="/login.action"></property>
+		<!--验证成功需要返回指定的地址  -->
+		<property name="successUrl" value="/main.action"></property>
+		<!-- 配置无权限访问时的页面 -->
+		<property name="unauthorizedUrl" value="/refuse.jsp"></property>
+		<!-- 配置处理结果的Filter -->
+		<property name="filters">
+			<map>
+				<entry key="authc" value-ref="loginFormAuthFilter" />
+			</map>
+		</property>
+		<!-- 定义访问资源的权限类型，对不同的资源设置不同的过滤器 -->
+		<property name="filterChainDefinitions">
+			<value>
+				<!-- 授权 -->
+				<!-- /sysmgr/queryDictList = perms[dict:query] -->
+				<!--对静态资源进行匿名访问  -->
+			 	/jsAndCss/** = anon
+			 	/toLogin.action = anon
+			 	/logout.action = logout
+			 	<!--/** = authc 代表所有的url必须经过认证才可以访问  -->
+			 	/** = authc
+			</value>
+		</property>
+	</bean>
+	
+	<!-- 注册安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="userRealm"></property>
+		<property name="cacheManager" ref="ehcacheManager"></property>
+		<property name="sessionManager" ref="sessionManager"></property>
+	</bean>
+	<!-- 注册userRealm -->
+	<bean id="userRealm" class="com.zt.ssspm.security.UserRealm">
+		<!-- 引入凭正匹配器 -->
+		<property name="credentialsMatcher" ref="credentialsMatcher"></property>
+		<property name="userService" ref="userService"></property>
+		<property name="menuService" ref="menuService"></property>
+		
+	</bean>
+	<!-- 配置凭正匹配器 -->
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+		<property name="hashAlgorithmName" value="SHA-1" />
+		<property name="hashIterations" value="1024" />
+	</bean>
+	<!-- 配置处理结果的过滤器 -->
+	<bean id="loginFormAuthFilter" class="com.zt.ssspm.security.LoginFormAuthticationFilter"></bean>
+	<!-- 配置ehcacheManager -->
+	<bean id="ehcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml"></property>
+	</bean>
+	<!-- 定义sessionManager -->
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<!-- 配置session的失效时间,单位是ms 1h -->
+		<property name="globalSessionTimeout" value="36000000"></property>
+		<!-- 定时清理失效的会话  30min -->
+		<property name="sessionValidationInterval" value="1800000"></property>
+	</bean>
+</beans>

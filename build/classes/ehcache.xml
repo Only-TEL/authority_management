@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="ehcache.xsd">
+	
+	<!--缓存数据的存储路径  -->
+    <diskStore path="E:\ssspm\ehcahe" />
+    
+    <!--默认缓存配置，以下属性是必须的：
+	name ：cache的标识符，在一个CacheManager中必须唯一。
+	maxElementsInMemory ： 在内存中缓存的element的最大数目。
+	maxElementsOnDisk ： 在磁盘上缓存的element的最大数目。
+	eternal ： 设定缓存的elements是否有有效期。如果为true，timeouts属性被忽略。
+	overflowToDisk ： 设定当内存缓存溢出的时候是否将过期的element缓存到磁盘上。        
+     -->
+    <!-- 其他配置
+     timeToIdleSeconds：设置对象在失效前的允许闲置时间（单位：秒）
+     timeToLiveSeconds：设置对象在失效前允许存活时间（单位：秒）
+     -->
+     
+    <!-- 默认缓存配置 -->
+    <defaultCache 
+    		maxElementsInMemory="10000"
+    		maxElementsOnDisk="100000"
+    		eternal="false"
+    		overflowToDisk="false"     		 		
+     		timeToIdleSeconds="300" 
+    		timeToLiveSeconds="600"
+            />
+
+</ehcache>

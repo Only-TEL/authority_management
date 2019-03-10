@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	
+<struts>
+	<package name="sysPackage" namespace="/sysmgr" extends="myPackage" >
+		
+		<!-- 用户操作以及密码修改 -->
+		<action name="toUserInfo" class="userAction" method="toUserInfo">
+			<result>/WEB-INF/pages/sysmanage/user/userInfo.jsp</result>
+		</action>		
+		<action name="toChangePwd" class="userAction" method="toChangePwd">
+			<result>/WEB-INF/pages/sysmanage/user/changePwd.jsp</result>
+		</action>
+		<action name="toUserMgr" class="userAction" method="toUserMgr">
+			<result>/WEB-INF/pages/sysmanage/user/userMgr.jsp</result>
+		</action>
+		<action name="getUserInfoById" class="userAction" method="userInfo">
+			<result type="json">
+				<param name="includeProperties">info</param>
+			</result>
+		</action>
+		<action name="saveChangePwd" class="userAction" method="saveChangePwd">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="saveUserById" class="userAction" method="updateUser">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="userList" class="userAction" method="userList">
+			<result>/WEB-INF/pages/sysmanage/user/userList.jsp</result>
+		</action>
+		<action name="userEdit" class="userAction" method="userEdit">
+			<result>/WEB-INF/pages/sysmanage/user/userEdit.jsp</result>
+		</action>
+		<action name="deptTreeData" class="userAction" method="deptTreeData" >
+			<result type="json">
+				<param name="includeProperties">jsonObj</param>
+			</result>
+		</action>
+		<action name="getUserListPage" class="userAction" method="getUserListPage">
+			<result type="json">
+				<param name="includeProperties">jsonObj</param>
+			</result>
+		</action>
+		<action name="saveUser" class="userAction" method="saveUser">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="delUser" class="userAction" method="delUser">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		
+		
+		
+		
+		
+		<!-- 字典的增删改查 -->
+		<action name="toDictListPage" class="dictAction" method="toDictListPage">
+			<result>/WEB-INF/pages/sysmanage/dict/dictList.jsp</result>
+		</action>
+		<action name="toDictAddPage" class="dictAction" method="toDictAddPage">
+			<result>/WEB-INF/pages/sysmanage/dict/dictAdd.jsp</result>
+		</action>
+		<action name="queryDictList" class="dictAction" method="queryDictList">
+			<result type="json">
+				<param name="includeProperties">info</param>
+			</result>
+		</action>
+		<action name="dictEdit" class="dictAction" method="dictEdit">
+			<result>/WEB-INF/pages/sysmanage/dict/dictAdd.jsp</result>
+		</action>
+		<action name="saveOrUpdateDict" class="dictAction" method="saveOrUpdateDict">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="dictDelete" class="dictAction" method="dictDelete">
+			<!-- 删除后重定向到分页查询的Action -->
+			<result type="redirect">/sysmgr/toDictListPage.action</result>
+		</action>
+		
+		<!-- 菜单的增删改查 -->
+		<action name="menuList" class="menuAction" method="menuList">
+			<result>/WEB-INF/pages/sysmanage/menu/menuList.jsp</result>
+		</action>
+		<action name="menuEdit" class="menuAction" method="menuEdit">
+			<result>/WEB-INF/pages/sysmanage/menu/menuEdit.jsp</result>
+		</action>
+		<action name="saveMenu" class="menuAction" method="saveMenu">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="delMenu" class="menuAction" method="delMenu">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<!-- 部门的增删改查 -->
+		<action name="deptEdit" class="deptAction" method="deptEdit">
+			<result>/WEB-INF/pages/sysmanage/dept/deptEdit.jsp</result>
+		</action>
+		<action name="deptList" class="deptAction" method="deptList">
+			<result>/WEB-INF/pages/sysmanage/dept/deptList.jsp</result>
+		</action>
+		<action name="getDeptTree" class="deptAction" method="getDeptTree">
+			<result type="json">
+				<param name="includeProperties">jsonObj</param>
+			</result>
+		</action>
+		<action name="saveDept" class="deptAction" method="saveDept">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="delDept" class="deptAction" method="delDept">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<!-- 区域的增删改查 -->
+		<action name="areaEdit" class="areaAction" method="areaEdit">
+			<result>/WEB-INF/pages/sysmanage/area/areaEdit.jsp</result>
+		</action>
+		<action name="areaList" class="areaAction" method="areaList">
+			<result>/WEB-INF/pages/sysmanage/area/areaList.jsp</result>
+		</action>
+		<action name="getAreaTree" class="areaAction" method="getAreaTree">
+			<result type="json">
+				<param name="includeProperties">jsonObj</param>
+			</result>
+		</action>
+		<action name="saveArea" class="areaAction" method="saveArea">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="delArea" class="areaAction" method="delArea">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<!-- 配置角色的Action -->
+		<action name="roleEdit" class="roleAction" method="roleEdit">
+			<result>/WEB-INF/pages/sysmanage/role/roleEdit.jsp</result>
+		</action>
+		<action name="roleList" class="roleAction" method="roleList">
+			<result>/WEB-INF/pages/sysmanage/role/roleList.jsp</result>
+		</action>
+		<action name="saveRole" class="roleAction" method="saveRole">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		<action name="delRole" class="roleAction" method="delRole">
+			<result type="json">
+				<param name="includeProperties">msg</param>
+			</result>
+		</action>
+		
+		
+		
+		
+		
+		
+		
+		<!-- 标签请求数据的action -->
+		<action name="getMenuTree" class="menuAction" method="getMenuTree">
+			<result type="json">
+				<param name="includeProperties">jsonObj</param>
+			</result>
+		</action>
+		<!-- 标签请求页面的Action -->
+		<action name="treeSelect" class="com.zt.ssspm.sysmanage.action.TagAction" method="treeSelect">
+			<result>/WEB-INF/pages/common/treeSelect.jsp</result>
+		</action>
+		<action name="iconSelect" class="com.zt.ssspm.sysmanage.action.TagAction" method="iconSelect">
+			<result>/WEB-INF/pages/common/iconSelect.jsp</result>
+		</action>
+		<!-- 菜单请求action -->
+		<action name = "menuNavi" class= "menuAction" method = "menuNavi">
+		 	<result>/WEB-INF/pages/main/menuNavi.jsp</result>
+		</action>
+	</package>
+</struts>

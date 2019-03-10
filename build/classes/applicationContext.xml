@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:tx="http://www.springframework.org/schema/tx" 
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd 
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd 
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd 
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd" >
+        
+	<!-- 读取jdbc.propertites配置文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	<!-- 配置c3p0连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driverClass}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.user}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	<!-- 配置jdbc模版对象 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 配置jdbc事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 配置通知 -->
+	<tx:advice id="myAdvice">
+		<tx:attributes>
+			<tx:method name="save*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false" />
+			<tx:method name="update*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false" />
+			<tx:method name="delete*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false" />
+			<tx:method name="query*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="true" />
+			
+			<tx:method name="persist*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false" />
+			<tx:method name="modify*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false" />
+			<tx:method name="remove*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false" />
+			<tx:method name="find*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="true" />
+			
+			<tx:method name="login" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置织入 -->
+	<aop:config>
+		<aop:pointcut expression="execution( * com.zt.ssspm.service.impl.*.*(..))" id="txPointcut"/>
+		<aop:advisor advice-ref="myAdvice" pointcut-ref="txPointcut"/>
+	</aop:config>
+	<!-- 用户配置 -->
+	<bean id="userDao" class="com.zt.ssspm.sysmanage.dao.impl.UserDao">
+		<property name="template" ref="jdbcTemplate"></property>
+	</bean>
+	<bean id="userService" class="com.zt.ssspm.sysmanage.service.impl.UserService">
+		<property name="userDao" ref="userDao"></property>
+		<property name="roleDao" ref="roleDao"></property>
+	</bean>
+	<bean id="loginAction" class="com.zt.ssspm.sysmanage.action.LoginAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+		<property name="menuService" ref="menuService"></property>
+	</bean>
+	<bean id="userAction" class="com.zt.ssspm.sysmanage.action.UserAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+		<property name="deptService" ref="deptService"></property>
+		<property name="roleService" ref="roleService"></property>
+	</bean>
+	<!-- 字典配置 -->
+	<bean id="dictDao" class="com.zt.ssspm.sysmanage.dao.impl.DictDao">
+		<property name="template" ref="jdbcTemplate"></property>
+	</bean>
+	<bean id="dictService" class="com.zt.ssspm.sysmanage.service.impl.DictService">
+		<property name="dictDao" ref="dictDao"></property>
+	</bean>
+	<bean id="dictAction" class="com.zt.ssspm.sysmanage.action.DictAction" scope="prototype">
+		<property name="dictService" ref="dictService"></property>
+	</bean>
+	<!-- 菜单配置 -->
+	<bean id="menuDao" class="com.zt.ssspm.sysmanage.dao.impl.MenuDao">
+		<property name="template" ref="jdbcTemplate"></property>
+	</bean>
+	<bean id="menuService" class="com.zt.ssspm.sysmanage.service.impl.MenuService">
+		<property name="menuDao" ref="menuDao"></property>
+		<property name="roleDao" ref="roleDao" />
+	</bean>
+	<bean id="menuAction" class="com.zt.ssspm.sysmanage.action.MenuAction" scope="prototype">
+		<property name="menuService" ref="menuService"></property>
+	</bean>
+	<!-- 部门配置 -->
+	<bean id="deptDao" class="com.zt.ssspm.sysmanage.dao.impl.DeptDao">
+		<property name="template" ref="jdbcTemplate"></property>
+	</bean>
+	<bean id="deptService" class="com.zt.ssspm.sysmanage.service.impl.DeptService">
+		<property name="deptDao" ref="deptDao" />
+		<property name="roleDao" ref="roleDao" />
+	</bean>
+	<bean id="deptAction" class="com.zt.ssspm.sysmanage.action.DeptAction" scope="prototype">
+		<property name="deptService" ref="deptService" />
+	</bean>
+	<!-- 区域配置 -->
+	<bean id="areaDao" class="com.zt.ssspm.sysmanage.dao.impl.AreaDao">
+		<property name="template" ref="jdbcTemplate"></property>
+	</bean>
+	<bean id="areaService" class="com.zt.ssspm.sysmanage.service.impl.AreaService">
+		<property name="areaDao" ref="areaDao" />
+		<property name="roleDao" ref="roleDao" />
+	</bean>
+	<bean id="areaAction" class="com.zt.ssspm.sysmanage.action.AreaAction" scope="prototype">
+		<property name="areaService" ref="areaService" />
+		<property name="dictService" ref="dictService"></property>
+	</bean>
+	<!-- 角色配置 -->
+	<bean id="roleDao" class="com.zt.ssspm.sysmanage.dao.impl.RoleDao">
+		<property name="template" ref="jdbcTemplate"></property>
+	</bean>
+	<bean id="roleService" class="com.zt.ssspm.sysmanage.service.impl.RoleService">
+		<property name="roleDao" ref="roleDao"></property>
+	</bean>
+	<bean id="roleAction" class="com.zt.ssspm.sysmanage.action.RoleAction" scope="prototype">
+		<property name="roleService" ref="roleService"></property>
+		<property name="deptServcie" ref="deptService"></property>
+		<property name="areaService" ref="areaService"></property>
+		<property name="menuService" ref="menuService"></property>
+	</bean>
+	
+	
+	
+	
+	
+	<import resource="classpath:applicationContext-shiro.xml"/>
+</beans>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	
+<struts>
+	<!-- 开发常用配置 -->
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<!-- 
+		整合Spring，开启spring工厂
+		struts.objectFactory = spring
+		struts.objectFactory.spring.autoWire = name(已开启)
+			可以不配置struts.objectFactory = spring，默认就是通过Spring通过名称自动装配
+	 -->
+	<!-- <constant name="struts.objectFactory" value="spring" /> -->
+	
+	<package name="myPackage" abstract="true" extends="json-default">
+		<interceptors>
+			<interceptor name="loginInterceptor" class="com.zt.ssspm.interceptor.LoginInterceptor"></interceptor>
+			<interceptor name="authorizationInterceptor" class="com.zt.ssspm.interceptor.AuthorizationInterceptor"></interceptor>
+			<!-- 自定义的拦截器栈 -->
+			<interceptor-stack name="myStack">
+<!-- 
+	<interceptor-ref name="loginInterceptor"></interceptor-ref>
+	<interceptor-ref name="authorizationInterceptor"></interceptor-ref> 
+-->
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="myStack"></default-interceptor-ref>
+		<!-- 定义全局结果集 -->
+		<global-results>
+			<result name="toLoginPage" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">toLogin</param>
+			</result>
+			<result name="refusePage">/refuse.jsp</result>
+		</global-results>
+		
+		<!-- 定义系统的全局异常处理 -->
+		<global-exception-mappings>
+			<exception-mapping result="refusePage" exception="org.apache.shiro.authz.UnauthorizedException"></exception-mapping>
+		</global-exception-mappings>
+	</package>
+	
+	<package name="loginPackage" namespace="/" extends="myPackage">
+		<!-- 重定向到登陆页面 -->
+		<action name="toLogin" class="loginAction" method="loginPage">
+			<result>/WEB-INF/pages/login.jsp</result>
+		</action>
+		<!-- 登陆使用的Action -->
+		<!-- <action name="login" class="loginAction" method="login">
+			<result name="success" type="redirect">/main.action</result>
+			<result name="error">/WEB-INF/pages/login.jsp</result>
+		</action> -->
+		<action name = "login" class = "loginAction" method = "login">
+	 		<result name = "main" type = "redirect">/main.action</result>
+	 		<result name = "loginPage" >/WEB-INF/pages/login.jsp</result>
+	 	</action>
+		<!-- 跳转主页面 -->
+		<action name="main" class="loginAction" method="main">
+			<result>/WEB-INF/pages/main/index.jsp</result>
+		</action>
+	</package>
+	
+	<include file="struts-sysmanage.xml"></include>
+</struts>
